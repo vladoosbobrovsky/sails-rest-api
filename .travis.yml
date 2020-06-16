@@ -1,0 +1,21 @@
+sudo: required
+
+language: node_js
+
+services:
+  - docker # required
+
+install:
+  - echo "install nothing!" # put your normal pre-testing installs here
+
+script:
+  - echo "no tests!" # put your normal testing scripts here
+  - docker run hello-world
+  - docker rmi -f $(docker images -q)
+after_success:
+  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" ;
+      docker build -t sails . ;
+      docker tag sails:latest 20000903/sails ;
+      docker push 20000903/sails:latest ;
+    fi
